@@ -1,0 +1,14 @@
+node_modules
+.aws-sam
+
+# example files
+examples/
+
+# playground
+playground.js
+
+# SAM deploy configuration
+samconfig.toml
+
+# env files
+.env

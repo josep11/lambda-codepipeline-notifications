@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+
+Parameters:
+  TargetTopicArn:
+    Type: String
+    Description: The SNS Topic where the lambda function will publish the result
+    Default: arn:aws:sns:eu-west-1:774392577521:codepipeline-results
+
+Resources:
+  CodepipelineNotificationFunction:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: handler.handler
+      Runtime: nodejs14.x
+      CodeUri: .
+      Environment:
+        Variables:
+          TARGET_TOPIC_ARN: !Ref TargetTopicArn
+      Policies:
+        # List of all policies https://github.com/aws/serverless-application-model/blob/develop/samtranslator/policy_templates_data/policy_templates.json
+        - AWSCodePipelineReadOnlyAccess
+        - AmazonSNSFullAccess
+
+  # Define the SNS topic
+  CodepipelineBuildTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: CodePipeline Build Topic
+      TopicName: codepipeline-build-topic
+      Subscription:
+        - Protocol: lambda
+          Endpoint: !GetAtt CodepipelineNotificationFunction.Arn
+
+  # Provide permission for SNS to invoke the Lambda function
+  TopicConsumerCodepipelineNotificationFunctionPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref CodepipelineNotificationFunction
+      Principal: sns.amazonaws.com
+
+  SNSAccessPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Id: MyTopicPolicy
+        Version: "2012-10-17"
+        Statement:
+          - Sid: My-statement-id
+            Effect: Allow
+            Principal:
+              AWS: "*"
+            Action: sns:Publish
+            Resource: !Ref CodepipelineBuildTopic
+      # Apply the access policy to our code pipeline topic
+      Topics:
+        - !Ref CodepipelineBuildTopic
