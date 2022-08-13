@@ -1,13 +1,13 @@
-const { CodePipelineClient } = require("@aws-sdk/client-codepipeline");
-const SNS = require("aws-sdk/clients/sns");
-const { ClientWrapper } = require("./ClientWrapper");
-const sns = new SNS();
+import { CodePipelineClient } from "@aws-sdk/client-codepipeline";
+import { ClientWrapper } from "./ClientWrapper";
+import { SNS } from "@aws-sdk/client-sns";
+const sns = new SNS({});
 
 const { TARGET_TOPIC_ARN } = process.env;
 
 const config = {};
 
-exports.handler = async (event, context, callback) => {
+export const handler = async (event: any) => {
 	let codePipelineMessage = null;
 	if (event.Records && event.Records.length > 0) {
 		codePipelineMessage = JSON.parse(event.Records[0].Sns.Message);
@@ -46,5 +46,5 @@ exports.handler = async (event, context, callback) => {
 
 	console.log(params);
 
-	return await sns.publish(params).promise();
+	return await sns.publish(params);
 };

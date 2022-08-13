@@ -13,7 +13,7 @@ Resources:
     Properties:
       Handler: handler.handler
       Runtime: nodejs14.x
-      CodeUri: .
+      CodeUri: dist
       Environment:
         Variables:
           TARGET_TOPIC_ARN: !Ref TargetTopicArn

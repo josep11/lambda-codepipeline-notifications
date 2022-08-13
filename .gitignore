@@ -15,3 +15,6 @@ samconfig.toml
 
 # IDE
 .vscode
+
+# build files
+dist
