@@ -22,6 +22,8 @@ sam sync --stack-name $(basename $(pwd)) --watch
 
 ## Deploy to production
 
+TODO: build ts as part of sam build
+
 ```bash
 sam build
 sam deploy -g
