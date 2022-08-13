@@ -12,3 +12,6 @@ samconfig.toml
 
 # env files
 .env
+
+# IDE
+.vscode

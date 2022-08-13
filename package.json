@@ -1,7 +1,7 @@
 {
   "name": "lambda-codepipeline-notifications",
   "version": "1.0.0",
-  "description": "",
+	"description": "Lambda function that can be hooked to CodePipeline notifications and will publish the summary to an SNS topic with useful data about the deploy",
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
