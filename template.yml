@@ -7,6 +7,14 @@ Parameters:
     Description: The SNS Topic where the lambda function will publish the result
     Default: arn:aws:sns:eu-west-1:774392577521:codepipeline-results
 
+Globals:
+  Function:
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+    Runtime: nodejs14.x
+    MemorySize: 128
+    Timeout: 3
+
 Resources:
   CodepipelineNotificationFunction:
     Type: "AWS::Serverless::Function"

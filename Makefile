@@ -1,22 +1,23 @@
-build-CodepipelineNotificationFunction:
-	npm install
-# workaround https://github.com/aws/aws-sam-cli/issues/2565
-	npm rebuild
-# npm run lint
-	npm run build
-	npm prune --production
-ifeq ($(OS),Windows_NT)
-	Xcopy /E dist common $(ARTIFACTS_DIR)
-else
-	cp -r dist common $(ARTIFACTS_DIR)
-endif
-# copy deps
-# ifeq ($(OS),Windows_NT)
-# 	Xcopy /E node_modules $(ARTIFACTS_DIR)
-# else
-# 	cp -r node_modules $(ARTIFACTS_DIR)/dist
-# endif
+.PHONY: build-RuntimeDependenciesLayer build-lambda-common
 
+sam/watch:
+	sam sync --stack-name $(shell basename $(shell pwd)) --watch
+
+sam/deploy:
+	sam build
+	sam deploy --no-confirm-changeset
+
+build-lambda-common:
+	npm install
+	npm rebuild
+	rm -rf dist
+	echo "{\"extends\": \"./tsconfig.json\", \"include\": [\"${HANDLER}\"] }" > tsconfig-only-handler.json
+	npm run build -- --build tsconfig-only-handler.json
+# 	npm prune --production # TODO: think wether to use it
+	cp -r dist "$(ARTIFACTS_DIR)/"
+
+build-CodepipelineNotificationFunction:
+	$(MAKE) HANDLER=handler.ts build-lambda-common
 
 build-RuntimeDependenciesLayer:
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
