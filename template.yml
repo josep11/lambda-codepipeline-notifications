@@ -10,10 +10,12 @@ Parameters:
 Resources:
   CodepipelineNotificationFunction:
     Type: "AWS::Serverless::Function"
+    Metadata:
+      BuildMethod: makefile
     Properties:
-      Handler: handler.handler
+      Handler: dist/handler.handler
       Runtime: nodejs14.x
-      CodeUri: dist
+      # CodeUri: dist/
       Environment:
         Variables:
           TARGET_TOPIC_ARN: !Ref TargetTopicArn
@@ -56,3 +58,14 @@ Resources:
       # Apply the access policy to our code pipeline topic
       Topics:
         - !Ref CodepipelineBuildTopic
+
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile # This does the trick
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: .
+      CompatibleRuntimes:
+        - nodejs14.x
+      RetentionPolicy: Retain

@@ -1,24 +1,20 @@
 import { CodePipelineClient } from "@aws-sdk/client-codepipeline";
 import { ClientWrapper } from "./ClientWrapper";
 import { SNS } from "@aws-sdk/client-sns";
+import { SNSEvent } from "./common/sns-event";
+import { CodePipelineExecutionStateChange } from "./common/CodePipelineExecutionStateChange";
 const sns = new SNS({});
 
 const { TARGET_TOPIC_ARN } = process.env;
 
 const config = {};
 
-export const handler = async (event: any) => {
-	let codePipelineMessage = null;
-	if (event.Records && event.Records.length > 0) {
-		codePipelineMessage = JSON.parse(event.Records[0].Sns.Message);
-	} else {
-		// only for dev
-		codePipelineMessage = event.detail ? event : null;
-	}
-
-	if (!codePipelineMessage) {
+export const handler = async (event: SNSEvent) => {
+	if (!event.Records || !event.Records.length) {
 		throw new Error("Input error: cannot find code pipeline message");
 	}
+	
+	const codePipelineMessage: CodePipelineExecutionStateChange = JSON.parse(event.Records[0].Sns.Message);
 
 	const pipelineName = codePipelineMessage.detail.pipeline;
 
