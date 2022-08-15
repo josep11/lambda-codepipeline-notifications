@@ -1,24 +1,20 @@
-const { CodePipelineClient } = require("@aws-sdk/client-codepipeline");
-const SNS = require("aws-sdk/clients/sns");
-const { ClientWrapper } = require("./ClientWrapper");
-const sns = new SNS();
+import { CodePipelineClient } from "@aws-sdk/client-codepipeline";
+import { ClientWrapper } from "./ClientWrapper";
+import { SNS } from "@aws-sdk/client-sns";
+import { SNSEvent } from "./common/sns-event";
+import { CodePipelineExecutionStateChange } from "./common/CodePipelineExecutionStateChange";
+const sns = new SNS({});
 
 const { TARGET_TOPIC_ARN } = process.env;
 
 const config = {};
 
-exports.handler = async (event, context, callback) => {
-	let codePipelineMessage = null;
-	if (event.Records && event.Records.length > 0) {
-		codePipelineMessage = JSON.parse(event.Records[0].Sns.Message);
-	} else {
-		// only for dev
-		codePipelineMessage = event.detail ? event : null;
-	}
-
-	if (!codePipelineMessage) {
+export const handler = async (event: SNSEvent) => {
+	if (!event.Records || !event.Records.length) {
 		throw new Error("Input error: cannot find code pipeline message");
 	}
+	
+	const codePipelineMessage: CodePipelineExecutionStateChange = JSON.parse(event.Records[0].Sns.Message);
 
 	const pipelineName = codePipelineMessage.detail.pipeline;
 
@@ -46,5 +42,5 @@ exports.handler = async (event, context, callback) => {
 
 	console.log(params);
 
-	return await sns.publish(params).promise();
+	return await sns.publish(params);
 };

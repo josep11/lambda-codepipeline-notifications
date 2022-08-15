@@ -12,3 +12,9 @@ samconfig.toml
 
 # env files
 .env
+
+# IDE
+.vscode
+
+# build files
+dist
