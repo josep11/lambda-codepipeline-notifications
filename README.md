@@ -6,6 +6,8 @@ Essentially it sits between two SNS topics where the target topic is front facin
 
 The SAM template will run and create the infrastructure for us.
 
+To hook it propperly you should go to a particular CodePipeline Pipeline and click "Create notification rule", check the triggers you want (eg: Succeeded, etc) and then select the "Notification rule targets" to be SNS Topic and select the ARN of the `codepipeline-build-topic`.
+
 ## Develop
 
 Install dependencies:

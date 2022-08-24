@@ -13,8 +13,16 @@ export const handler = async (event: SNSEvent) => {
 	if (!event.Records || !event.Records.length) {
 		throw new Error("Input error: cannot find code pipeline message");
 	}
-	
-	const codePipelineMessage: CodePipelineExecutionStateChange = JSON.parse(event.Records[0].Sns.Message);
+
+	let codePipelineMessage: CodePipelineExecutionStateChange;
+	try {
+		codePipelineMessage = JSON.parse(event.Records[0].Sns.Message);
+	} catch (err) {
+		console.error("Error parsing SNS message");
+		console.log(event);
+		console.error(err);
+		return;
+	}
 
 	const pipelineName = codePipelineMessage.detail.pipeline;
 
