@@ -44,7 +44,7 @@ export const handler = async (event: SNSEvent) => {
 	const params = {
 		Message: `Deployed branch: <a href="${branchURL}">${branchName}</a>
 From repository: ${repository}
-Commit Id: <a href="${branchURL}">${commitId}</a>
+Commit Id: <a href="${commitURL}">${commitId}</a>
 Deploy state is: ${deployState}
         `,
 		TopicArn: TARGET_TOPIC_ARN,
