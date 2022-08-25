@@ -5,7 +5,7 @@ import { SNSEvent } from "./common/sns-event";
 import { CodePipelineExecutionStateChange } from "./common/CodePipelineExecutionStateChange";
 const sns = new SNS({});
 
-const { TARGET_TOPIC_ARN } = process.env;
+const { TARGET_TOPIC_ARN, REPO_BASE_URL } = process.env;
 
 const config = {};
 
@@ -38,11 +38,14 @@ export const handler = async (event: SNSEvent) => {
 	let { deployState, commitId } =
 		await clientWrapper.getPipelineLastExecutionInfo(pipelineName);
 
+	const branchURL = `${REPO_BASE_URL}/${repository}/branch/${branchName}`;
+	const commitURL = `${REPO_BASE_URL}/${repository}/commits/${commitId}`;
+
 	const params = {
-		Message: `Deployed branch ${branchName}
-        From repository ${repository}
-        Commit Id: ${commitId}
-        Deploy state is: ${deployState}
+		Message: `Deployed branch: <a href="${branchURL}">${branchName}</a>
+From repository: ${repository}
+Commit Id: <a href="${branchURL}">${commitId}</a>
+Deploy state is: ${deployState}
         `,
 		TopicArn: TARGET_TOPIC_ARN,
 		Subject: `Deploy ${deployState}`,

@@ -7,6 +7,11 @@ Parameters:
     Description: The SNS Topic where the lambda function will publish the result
     Default: arn:aws:sns:eu-west-1:774392577521:codepipeline-results
 
+  RepoBaseUrl:
+    Type: String
+    Description: The base url of the repository where source code is stored
+    Default: https://bitbucket.org
+
 Globals:
   Function:
     Layers:
@@ -27,6 +32,8 @@ Resources:
       Environment:
         Variables:
           TARGET_TOPIC_ARN: !Ref TargetTopicArn
+          REPO_BASE_URL: !Ref RepoBaseUrl
+          
       Policies:
         # List of all policies https://github.com/aws/serverless-application-model/blob/develop/samtranslator/policy_templates_data/policy_templates.json
         - AWSCodePipelineReadOnlyAccess
