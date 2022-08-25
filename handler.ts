@@ -42,16 +42,20 @@ export const handler = async (event: SNSEvent) => {
 	const commitURL = `${REPO_BASE_URL}/${repository}/commits/${commitId}`;
 
 	const params = {
-		Message: `Deployed branch: <a href="${branchURL}">${branchName}</a>
+		Message: `
+Deployed branch: ${branchName} (${branchURL})
 From repository: ${repository}
-Commit Id: <a href="${commitURL}">${commitId}</a>
+Commit Id: ${commitId} (${commitURL})
 Deploy state is: ${deployState}
         `,
 		TopicArn: TARGET_TOPIC_ARN,
 		Subject: `Deploy ${deployState}`,
+		MessageStructure: 'html'
 	};
 
 	console.log(params);
 
+	// TODO: rm
+	// return null;
 	return await sns.publish(params);
 };
